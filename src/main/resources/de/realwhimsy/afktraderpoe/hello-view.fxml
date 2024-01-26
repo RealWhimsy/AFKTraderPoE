@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--<VBox alignment="CENTER" prefHeight="244.0" prefWidth="272.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.HelloController">-->
+<!--  <padding>-->
+<!--    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />-->
+<!--  </padding>-->
+<!--  <HBox alignment="CENTER" prefHeight="10.0" prefWidth="302.0" spacing="10">-->
+<!--    <Label>Device IP:</Label>-->
+<!--    <TextField />-->
+<!--  </HBox>-->
+
+<!--  <HBox alignment="CENTER" prefHeight="10.0" prefWidth="302.0" spacing="10">-->
+<!--    <Label>Port:</Label>-->
+<!--    <TextField />-->
+<!--  </HBox>-->
+<!--</VBox>-->
+
+<?import javafx.scene.text.Text?>
+<GridPane alignment="CENTER" prefHeight="244.0" prefWidth="272.0" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.HelloController">
+  <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Device IP:</Label>
+  <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="device_ip_textfield" editable="false"></TextField>
+
+  <Label GridPane.columnIndex="0" GridPane.rowIndex="1">Port:</Label>
+  <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="port_textfield"></TextField>
+
+  <Button GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2" prefWidth="250" maxWidth="250">Connect</Button>
+
+  <Label GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2" textAlignment="CENTER" GridPane.halignment="CENTER">Status: Disconnected</Label>
+
+
+</GridPane>
