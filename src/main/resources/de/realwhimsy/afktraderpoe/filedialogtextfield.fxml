@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<!--<AnchorPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.FileDialogController">-->
+<!--    <children>-->
+<!--        <TextField fx:id="chooseFileTextField" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />-->
+<!--        <Button fx:id="chooseFileButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="32" textFill="WHITE" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">-->
+<!--         <graphic>-->
+<!--            <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">-->
+<!--               <image>-->
+<!--                  <Image url="@../img/folder_32.png" />-->
+<!--               </image>-->
+<!--            </ImageView>-->
+<!--         </graphic>-->
+<!--        </Button>-->
+<!--    </children>-->
+<!--</AnchorPane>-->
+
+<HBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.FileDialogController" alignment="CENTER" spacing="5">
+    <Button fx:id="chooseFileButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="32" textFill="WHITE" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+        <graphic>
+            <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@img/folder_32.png" />
+                </image>
+            </ImageView>
+        </graphic>
+    </Button>
+<TextField fx:id="chooseFileTextField" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+</HBox>

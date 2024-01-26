@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.text.Text?>
-<GridPane alignment="CENTER" prefHeight="244.0" prefWidth="272.0" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.AFKPoeTraderController">
+<GridPane alignment="CENTER" hgap="10" prefHeight="260" prefWidth="420" vgap="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.realwhimsy.afktraderpoe.AFKPoeTraderController">
   <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Device IP:</Label>
-  <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="deviceIpTextfield" editable="false"></TextField>
+  <TextField fx:id="deviceIpTextfield" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
   <Label GridPane.columnIndex="0" GridPane.rowIndex="1">Port:</Label>
-  <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="portTextfield"></TextField>
+  <TextField fx:id="portTextfield" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-  <Button GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2" prefWidth="250" maxWidth="250" fx:id="connectButton">Connect</Button>
+  <Label GridPane.columnIndex="0" GridPane.rowIndex="2">client.txt location:</Label>
+  <fx:include fx:id="filedialog" source="filedialogtextfield.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-  <Label GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2" textAlignment="CENTER" GridPane.halignment="CENTER">Status: Disconnected</Label>
+  <Button fx:id="connectButton" alignment="CENTER" maxWidth="500" prefWidth="300" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">Connect</Button>
+
+  <Label textAlignment="CENTER" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5">Status: Disconnected</Label>
 
 
 </GridPane>
