@@ -1,12 +1,6 @@
 package de.realwhimsy.afktraderpoe;
 
-import de.realwhimsy.afktraderpoe.datamodel.Item;
-import de.realwhimsy.afktraderpoe.datamodel.MessageParseUtil;
-import de.realwhimsy.afktraderpoe.datamodel.Price;
-import de.realwhimsy.afktraderpoe.datamodel.Transaction;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.ItemAdapter;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.PriceAdapter;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.TransactionAdapter;
+import de.realwhimsy.afktraderpoe.datamodel.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,9 +10,6 @@ import javafx.scene.control.TextField;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class AFKPoeTraderController {
     @FXML
@@ -37,7 +28,7 @@ public class AFKPoeTraderController {
     private Label statusLabel;
 
     private LogFileTailer logFileTailer;
-    private GsonBuilder gsonBuilder;
+    private boolean isConnected = false;
 
     @FXML
     public void initialize() throws UnknownHostException {
@@ -45,53 +36,54 @@ public class AFKPoeTraderController {
         deviceIpTextfield.setText(localHost.getHostAddress());
         portTextfield.setText("4747");
         connectButton.setOnAction(e -> onConnectButtonClicked());
-        initGsonBuilder();
     }
 
-    private void initGsonBuilder() {
-        gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Transaction.class, new TransactionAdapter());
-        gsonBuilder.registerTypeAdapter(Price.class, new PriceAdapter());
-        gsonBuilder.registerTypeAdapter(Item.class, new ItemAdapter());
-    }
 
     private void onConnectButtonClicked() {
-        // check if the file path is set to client.txt, if not, show warning and return
-        if (!fileDialogController.chooseFileTextField.getText().endsWith("Client.txt")) {
-            var alert = new Alert(Alert.AlertType.WARNING);
-            alert.setHeaderText("Incorrect Client.txt location");
-            alert.setContentText("The provided path does not point to the Client.txt file." +
-                    "\nPlease update the file path.");
-            alert.show();
-            return;
+        if (!isConnected) {
+            // check if the file path is set to client.txt, if not, show warning and return
+            if (!fileDialogController.chooseFileTextField.getText().endsWith("Client.txt")) {
+                var alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("Incorrect Client.txt location");
+                alert.setContentText("The provided path does not point to the Client.txt file." +
+                        "\nPlease update the file path.");
+                alert.show();
+                return;
+            }
+            startSocketConnection();
+            logFileTailer = LogFileTailer.getInstance(fileDialogController.chooseFileTextField.getText(), this::handleNewLine);
+            logFileTailer.start();
         }
-        startSocketConnection();
-        logFileTailer = new LogFileTailer(fileDialogController.chooseFileTextField.getText(), this::handleNewLine);
-        logFileTailer.start();
     }
 
     private void handleNewLine(String line) {
         if (MessageParseUtil.matchesItemBuyPattern(line)) {
-            var transaction = MessageParseUtil.getTransactionForItem(line);
-
-            Gson gson = gsonBuilder.create();
-            String json = gson.toJson(transaction);
-            SocketClient.sendMessage(json);
+            SocketClient.getInstance().sendTransaction(line);
         }
     }
 
     public void startSocketConnection() {
         String ipAddress = deviceIpTextfield.getText();
         int port = Integer.parseInt(portTextfield.getText());
-        SocketClient socketClient = new SocketClient(ipAddress, port, this::onMessageReceived);
+        SocketClient socketClient = SocketClient.getInstance();
+        socketClient.setIpAddress(ipAddress);
+        socketClient.setPort(port);
+        socketClient.setConnectionStatusChangedCallback(this::onConnectionStatusChanged);
         socketClient.init();
     }
 
-    private void onMessageReceived(String message) {
+    private void onConnectionStatusChanged(Boolean isConnected) {
+        this.isConnected = isConnected;
+        updateStatusLabelText(isConnected);
+    }
+
+    private void updateStatusLabelText(Boolean isConnected) {
         Platform.runLater(() -> {
-            if (message.equals("connected")) {
+            if (isConnected) {
                 statusLabel.setText("Status: Connected");
-            } else if (message.equals("disconnected")) {
+            } else {
+                logFileTailer.stop();
+                SocketClient.getInstance().closeConnection();
                 statusLabel.setText("Status: Disconnected");
             }
         });

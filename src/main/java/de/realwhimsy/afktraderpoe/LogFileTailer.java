@@ -6,14 +6,27 @@ import java.nio.file.Paths;
 import java.util.function.Consumer;
 
 public class LogFileTailer {
+    private static volatile LogFileTailer instance;
+
     private final String filePath;
     private volatile boolean running;
     private Thread thread;
     private Consumer<String> handleNewLineConsumer;
 
-    public LogFileTailer(String filePath, Consumer<String> handleNewLineConsumer) {
+    private LogFileTailer(String filePath, Consumer<String> handleNewLineConsumer) {
         this.filePath = filePath;
         this.handleNewLineConsumer = handleNewLineConsumer;
+    }
+
+    public static LogFileTailer getInstance(String filePath, Consumer<String> handleNewLineConsumer) {
+        if (instance == null) {
+            synchronized (LogFileTailer.class) {
+                if (instance == null) {
+                    instance = new LogFileTailer(filePath, handleNewLineConsumer);
+                }
+            }
+        }
+        return instance;
     }
 
     public void start() {
@@ -57,5 +70,4 @@ public class LogFileTailer {
             e.printStackTrace();
         }
     }
-
 }

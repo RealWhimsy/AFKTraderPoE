@@ -22,7 +22,7 @@ public class AFKPoeTraderApplication extends Application {
             if (fxmlLoader.getController() instanceof AFKPoeTraderController poeController) {
                 poeController.stopLogFileTailer();
             }
-            SocketClient.closeConnection();
+            SocketClient.getInstance().closeConnection();
             Platform.exit();
         });
 
