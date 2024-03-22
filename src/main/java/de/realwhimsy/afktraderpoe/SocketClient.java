@@ -16,6 +16,7 @@ public class SocketClient {
     private static PrintWriter out;
     private static BufferedReader in;
     private static Consumer<String> messageReceivedCallback;
+    private static boolean isRunning = false;
 
 
     public SocketClient(String ipAddress, int port, Consumer<String> messageReceivedCallback) {
@@ -29,6 +30,7 @@ public class SocketClient {
             socket = new Socket(ipAddress, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            isRunning = true;
 
             // Start a separate thread to read messages from the server
             new Thread(SocketClient::receiveMessages).start();
@@ -50,7 +52,7 @@ public class SocketClient {
     private static void receiveMessages() {
         try {
             String message;
-            while ((message = in.readLine()) != null) {
+            while (isRunning && (message = in.readLine()) != null) {
                 messageReceivedCallback.accept(message);
             }
         } catch (IOException e) {
@@ -64,6 +66,7 @@ public class SocketClient {
         }
 
         try {
+            isRunning = false;
             out.close();
             socket.close();
         } catch (IOException e) {
