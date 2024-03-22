@@ -1,9 +1,12 @@
 package de.realwhimsy.afktraderpoe;
 
+import javafx.scene.control.Alert;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.function.Consumer;
@@ -36,7 +39,14 @@ public class SocketClient {
             new Thread(SocketClient::receiveMessages).start();
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
-        } catch (Exception ex) {
+        } catch (ConnectException ex) {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Connection failed");
+            alert.setContentText("Could not connect to IP " + ipAddress + " on port " + port +
+                    "\nPlease make sure the entered IP and port match the values displayed in the AfkPoeTrader mobile app.");
+            alert.show();
+            ex.printStackTrace();
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

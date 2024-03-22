@@ -98,6 +98,8 @@ public class AFKPoeTraderController {
     }
 
     public void stopLogFileTailer() {
-        logFileTailer.stop();
+        if (logFileTailer != null) {
+            logFileTailer.stop();
+        }
     }
 }
