@@ -3,10 +3,7 @@ package de.realwhimsy.afktraderpoe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.realwhimsy.afktraderpoe.datamodel.*;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.AppResponseAdapter;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.ItemAdapter;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.PriceAdapter;
-import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.TransactionAdapter;
+import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.*;
 import javafx.scene.control.Alert;
 
 import java.io.BufferedReader;
@@ -29,6 +26,7 @@ public class SocketClient {
     private PrintWriter writer;
     private BufferedReader reader;
     private Consumer<Boolean> connectionStatusChangedCallback;
+    private Consumer<Reply> onReplyReceivedCallback;
     private boolean isRunning = false;
     private static SocketClient instance;
     private ScheduledExecutorService heartbeatTimer;
@@ -54,7 +52,7 @@ public class SocketClient {
 
                 startHeartbeatTimer();
                 startHeartbeatExecutor();
-                startServerListener();
+//                startServerListener();
             }
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
@@ -70,32 +68,12 @@ public class SocketClient {
         }
     }
 
-    private void startServerListener() {
-        Thread listenerThread = new Thread(() -> {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    String message = reader.readLine();
-                    if (message == null) {
-                        break;
-                    }
-                    System.out.println("Received message from server: " + message);
-                    // Reset heartbeat timer when any message is received from the server
-                    resetHeartbeatTimer();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // If the server closes the connection, stop the heartbeat executor
-            stopHeartbeatExecutor();
-        });
-        listenerThread.start();
-    }
-
     private void initGson() {
         var gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Transaction.class, new TransactionAdapter());
         gsonBuilder.registerTypeAdapter(Price.class, new PriceAdapter());
         gsonBuilder.registerTypeAdapter(Item.class, new ItemAdapter());
+        gsonBuilder.registerTypeAdapter(Reply.class, new ReplyAdapter());
         gsonBuilder.registerTypeAdapter(AppResponse.class, new AppResponseAdapter());
         gson = gsonBuilder.create();
     }
@@ -135,6 +113,10 @@ public class SocketClient {
                     case "heartbeat" -> resetHeartbeatTimer();
                     case "disconnected" -> connectionStatusChangedCallback.accept(false);
                     case "connected" -> connectionStatusChangedCallback.accept(true);
+                    case "reply" -> {
+                        var reply = gson.fromJson(appResponse.getContent(), Reply.class);
+                        onReplyReceivedCallback.accept(reply);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -189,6 +171,10 @@ public class SocketClient {
 
     public void setConnectionStatusChangedCallback(Consumer<Boolean> connectionStatusChangedCallback) {
         this.connectionStatusChangedCallback = connectionStatusChangedCallback;
+    }
+
+    public void setOnReplyReceivedCallback(Consumer<Reply> onReplyReceivedCallback) {
+        this.onReplyReceivedCallback = onReplyReceivedCallback;
     }
 
     public static SocketClient getInstance() {

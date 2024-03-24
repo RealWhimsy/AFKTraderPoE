@@ -14,6 +14,18 @@
 <junit.version>5.10.0</junit.version>  </properties>
 
   <dependencies>
+      <dependency>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna</artifactId>
+          <version>5.14.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna-platform</artifactId>
+          <version>5.14.0</version>
+      </dependency>
+
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -50,6 +62,11 @@
       <artifactId>gson</artifactId>
       <version>2.9.1</version>
     </dependency>
+      <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20090211</version>
+      </dependency>
 
   </dependencies>
 
