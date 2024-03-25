@@ -11,7 +11,7 @@ juicy trades while AFK again!
 ![Trade Notification on a phone](./src/res/trade_notification_demo.png)
 
 ## Installation
-Head over to the [Releases](../../releases) page and download both the
+Head over to the [Releases](https://github.com/RealWhimsy/AFKTraderPoE/releases) page and download both the
 AfkTraderPoe_Desktop.zip and AFKTraderPoE_Android.apk files.
 
 ### Android app
