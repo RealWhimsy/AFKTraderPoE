@@ -24,6 +24,7 @@ AfkTraderPoe_Desktop.zip and AFKTraderPoE_Android.apk files.
 - Click on the AfkTraderPoe.exe to launch the application
 
 ## Connecting your PC and your phone
+- Make sure your PC and your phone are connected to the same Network
 - Open the .exe file on your PC and launch the app on your phone.
 - In the desktop app there should be input fields for ip address and port.
 Enter the values that are displayed in the app on your phone. Make sure
