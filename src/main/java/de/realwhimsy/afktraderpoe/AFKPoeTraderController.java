@@ -1,7 +1,10 @@
 package de.realwhimsy.afktraderpoe;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.jna.platform.win32.WinDef;
 import de.realwhimsy.afktraderpoe.datamodel.*;
+import de.realwhimsy.afktraderpoe.datamodel.TypeAdapters.SettingsAdapter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -9,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -41,14 +45,40 @@ public class AFKPoeTraderController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private TextField windowNameTextfield;
+
     private LogFileTailer logFileTailer;
     private boolean isConnected = false;
+    private final String SETTINGS_FILE_PATH = "settings.json";
 
     @FXML
-    public void initialize() throws UnknownHostException {
-        InetAddress localHost = InetAddress.getLocalHost();
-        deviceIpTextfield.setText(localHost.getHostAddress());
-        portTextfield.setText("4747");
+    public void initialize() {
+        File file = new File(SETTINGS_FILE_PATH);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder jsonData = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonData.append(line);
+                }
+
+                // Parse JSON data using Gson
+                Gson gson = new GsonBuilder().registerTypeAdapter(Settings.class, new SettingsAdapter()).create();
+                Settings settings = gson.fromJson(jsonData.toString(), Settings.class);
+                deviceIpTextfield.setText(settings.getIpAddress());
+                portTextfield.setText(settings.getPort());
+                fileDialogController.chooseFileTextField.setText(settings.getClientTxtPath());
+                windowNameTextfield.setText(settings.getWindowName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            deviceIpTextfield.setText("192.168.xxx.xx");
+            portTextfield.setText("4747");
+            windowNameTextfield.setText("Path of Exile");
+        }
+
         connectButton.setOnAction(e -> onConnectButtonClicked());
     }
 
@@ -65,8 +95,26 @@ public class AFKPoeTraderController {
                 return;
             }
             startSocketConnection();
+            saveSettings();
             logFileTailer = LogFileTailer.getInstance(fileDialogController.chooseFileTextField.getText(), this::handleNewLine);
             logFileTailer.start();
+        }
+    }
+
+    private void saveSettings() {
+        var ipAddress = deviceIpTextfield.getText();
+        var port = portTextfield.getText();
+        var clientTxtPath = fileDialogController.chooseFileTextField.getText();
+        var windowName = windowNameTextfield.getText();
+        var settings = new Settings(ipAddress, port, clientTxtPath, windowName);
+        var gson = new GsonBuilder().registerTypeAdapter(Settings.class, new SettingsAdapter()).setPrettyPrinting().create();
+        var settingsJson = gson.toJson(settings, Settings.class);
+
+        // Write JSON object to file
+        try (FileWriter file = new FileWriter(SETTINGS_FILE_PATH)) {
+            file.write(settingsJson);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -158,7 +206,7 @@ public class AFKPoeTraderController {
         User32.INSTANCE.EnumWindows((hWnd, pointer) -> {
             User32.INSTANCE.GetWindowText(hWnd, buffer, buffer.length);
             String title = Native.toString(buffer);
-            if (title.equals(windowTitle)) {
+            if (title.trim().equals(windowTitle)) {
                 hwnd[0] = hWnd;
                 return false;
             }
